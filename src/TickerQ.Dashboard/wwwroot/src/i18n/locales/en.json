@@ -1,0 +1,85 @@
+{
+  "language": {
+    "label": "Language",
+    "switcher": "Switch language"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "timeTickers": "Time Tickers",
+    "cronTickers": "Cron Tickers"
+  },
+  "timezone": {
+    "display": "Display Time Zone",
+    "reset": "Reset to server timezone",
+    "scheduler": "Scheduler ({zone})"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "loading": "Loading...",
+    "unknown": "Unknown",
+    "error": "Error",
+    "websocketConnecting": "WebSocket Connecting...",
+    "websocketConnected": "WebSocket Connected",
+    "websocketDisconnected": "WebSocket Disconnected",
+    "initializing": "Initializing..."
+  },
+  "actions": {
+    "reconnect": "Reconnect",
+    "startSystem": "Start System",
+    "stop": "Stop",
+    "stopSystem": "Stop System",
+    "restart": "Restart",
+    "loading": "Loading..."
+  },
+  "login": {
+    "appTitle": "TickerQ Dashboard",
+    "subtitle": "Please authenticate to access the dashboard",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "apiKeyLabel": "API Key",
+    "apiKeyPlaceholder": "Enter your API key or access token",
+    "accessKeyLabel": "Access Key",
+    "accessKeyPlaceholder": "Bearer xyz123 or ApiKey abc456",
+    "signIn": "Sign In",
+    "signingIn": "Signing In...",
+    "authenticate": "Authenticate",
+    "authenticating": "Authenticating...",
+    "setAccessKey": "Set Access Key",
+    "settingAccessKey": "Setting Access Key...",
+    "helpBasic": "Enter your dashboard credentials to access TickerQ",
+    "helpApiKey": "Enter your API key or access token to access the dashboard",
+    "helpHost": "Enter your full access key (including Bearer/ApiKey prefix) for API calls",
+    "hostAuthenticationTitle": "Host Authentication",
+    "hostAuthenticationDescription": "This dashboard uses your application's existing authentication system.",
+    "publicTitle": "Public Dashboard",
+    "publicDescription": "No authentication required.",
+    "continue": "Continue to Dashboard"
+  },
+  "validation": {
+    "usernameRequired": "Username is required",
+    "usernameLength": "Username must be at least 3 characters",
+    "passwordRequired": "Password is required",
+    "apiKeyRequired": "API key is required",
+    "apiKeyLength": "API key must be at least 10 characters",
+    "accessKeyRequired": "Access key is required",
+    "accessKeyLength": "Access key must be at least 10 characters"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "basicRequired": "Basic Authentication Required",
+    "apiKeyRequired": "API Key Authentication Required",
+    "hostRequired": "Host Authentication Required",
+    "authRequired": "Authentication Required",
+    "loginSuccess": "Login successful!",
+    "loginFailed": "Login failed",
+    "loginFailedRetry": "Login failed. Please try again.",
+    "logoutSuccess": "Logged out successfully",
+    "logoutFailed": "Logout failed",
+    "enterApiKey": "Enter your API key"
+  }
+}
