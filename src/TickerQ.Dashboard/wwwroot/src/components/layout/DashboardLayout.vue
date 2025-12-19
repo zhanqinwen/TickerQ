@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { sleep } from '../../utilities/sleep'
 import { useDialog } from '../../composables/useDialog'
 import { ConfirmDialogProps } from '../common/ConfirmDialog.vue'
@@ -8,16 +9,20 @@ import { useDashboardStore } from '../../stores/dashboardStore'
 import { useConnectionStore } from '../../stores/connectionStore'
 import { useTimeZoneStore } from '@/stores/timeZoneStore'
 import AuthHeader from '../common/AuthHeader.vue'
+import LanguageSwitcher from '../common/LanguageSwitcher.vue'
 
-const navigationLinks = [
-  { icon: 'mdi-view-dashboard', text: 'Dashboard', path: '/' },
-  { icon: 'mdi-alarm', text: 'Time Tickers', path: '/time-tickers' },
-  { icon: 'mdi-calendar-sync', text: 'Cron Tickers', path: '/cron-tickers' },
-]
+const { t } = useI18n()
+
+const navigationLinks = computed(() => [
+  { icon: 'mdi-view-dashboard', text: t('nav.dashboard'), path: '/' },
+  { icon: 'mdi-alarm', text: t('nav.timeTickers'), path: '/time-tickers' },
+  { icon: 'mdi-calendar-sync', text: t('nav.cronTickers'), path: '/cron-tickers' },
+])
 
 // Reactive state
 const tickerHostStatus = ref(false)
-const currentMachine = ref('Loading...')
+const machineName = ref('')
+const machineStatus = ref<'loading' | 'unknown' | 'error'>('loading')
 const lastHostExceptionMessage = ref('')
 const isServicesReady = ref(false)
 
@@ -35,6 +40,21 @@ const timeZoneStore = useTimeZoneStore()
 
 // Time zone menu state
 const isTimeZoneMenuOpen = ref(false)
+const displayMachineName = computed(() => {
+  if (machineName.value) {
+    return machineName.value
+  }
+
+  if (machineStatus.value === 'error') {
+    return t('status.error')
+  }
+
+  if (machineStatus.value === 'unknown') {
+    return t('status.unknown')
+  }
+
+  return t('status.loading')
+})
 
 // Router
 const router = useRouter()
@@ -113,7 +133,13 @@ const loadInitialData = async () => {
     // Check if response is available before accessing it
     if (getOptions.response?.value) {
       const options = getOptions.response.value
-      currentMachine.value = options.currentMachine || 'Unknown'
+      if (options.currentMachine) {
+        machineName.value = options.currentMachine
+        machineStatus.value = 'loading'
+      } else {
+        machineName.value = ''
+        machineStatus.value = 'unknown'
+      }
       lastHostExceptionMessage.value = options.lastHostExceptionMessage || ''
 
       // Initialize scheduler time zone from server options
@@ -121,7 +147,8 @@ const loadInitialData = async () => {
         timeZoneStore.setSchedulerTimeZone(options.schedulerTimeZone)
       }
     } else {
-      currentMachine.value = 'Loading...'
+      machineName.value = ''
+      machineStatus.value = 'loading'
       lastHostExceptionMessage.value = ''
     }
 
@@ -134,7 +161,8 @@ const loadInitialData = async () => {
     }
   } catch (error) {
     // Failed to load initial data
-    currentMachine.value = 'Error'
+    machineName.value = ''
+    machineStatus.value = 'error'
     tickerHostStatus.value = false
   }
 }
@@ -188,14 +216,14 @@ function getWebSocketStatusText() {
   const isConnected = connectionStore.isWebSocketConnected
 
   if (isConnecting) {
-    return 'WebSocket Connecting...'
+    return t('status.websocketConnecting')
   }
 
   if (isConnected) {
-    return 'WebSocket Connected'
+    return t('status.websocketConnected')
   }
 
-  return 'WebSocket Disconnected'
+  return t('status.websocketDisconnected')
 }
 
 // Handle reconnection with health check
@@ -242,11 +270,11 @@ function handleAuthLogout() {
 // Connection status display
 const getConnectionStatus = computed(() => {
   if (connectionStore.isConnected) {
-    return 'Connected'
+    return t('status.websocketConnected')
   } else if (connectionStore.isConnecting) {
-    return 'Connecting...'
+    return t('status.websocketConnecting')
   } else {
-    return 'Disconnected'
+    return t('status.websocketDisconnected')
   }
 })
 
@@ -321,7 +349,7 @@ const handleForceUIUpdate = () => {
 
                 <v-card elevation="4" class="timezone-card">
                   <v-card-title class="text-subtitle-2">
-                    Display Time Zone
+                    {{ t('timezone.display') }}
                   </v-card-title>
                   <v-card-text class="pt-2">
                     <v-select
@@ -329,7 +357,7 @@ const handleForceUIUpdate = () => {
                       variant="outlined"
                       hide-details="auto"
                       :items="[
-                        { label: `Scheduler (${timeZoneStore.schedulerTimeZone || 'UTC'})`, value: null },
+                        { label: t('timezone.scheduler', { zone: timeZoneStore.schedulerTimeZone || 'UTC' }), value: null },
                         ...timeZoneStore.availableTimeZones.map(tz => ({ label: tz, value: tz }))
                       ]"
                       item-title="label"
@@ -343,7 +371,7 @@ const handleForceUIUpdate = () => {
                       prepend-icon="mdi-restore"
                       @click="timeZoneStore.setSelectedTimeZone(null)"
                     >
-                      Reset to server timezone
+                      {{ t('timezone.reset') }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -367,6 +395,8 @@ const handleForceUIUpdate = () => {
                 :prepend-icon="link.icon"
               ></v-btn>
             </div>
+
+            <LanguageSwitcher />
 
             <!-- Auth Header Component -->
             <div class="auth-container">
@@ -396,13 +426,13 @@ const handleForceUIUpdate = () => {
               ></div>
               <div class="status-info">
                 <div class="system-details">
-                  <span class="machine-name">{{ currentMachine }}</span>
+                  <span class="machine-name">{{ displayMachineName }}</span>
                   <span class="status-divider">•</span>
                   <span
                     class="status-text"
                     :class="{ 'status-online': tickerHostStatus, 'status-offline': !tickerHostStatus }"
                   >
-                    {{ tickerHostStatus ? 'Online' : 'Offline' }}
+                    {{ tickerHostStatus ? t('status.online') : t('status.offline') }}
                   </span>
                 </div>
               </div>
@@ -428,7 +458,7 @@ const handleForceUIUpdate = () => {
                 class="reconnect-btn"
                 @click="handleReconnect()"
               >
-                Reconnect
+                {{ t('actions.reconnect') }}
               </v-btn>
 
             </div>
@@ -436,7 +466,7 @@ const handleForceUIUpdate = () => {
             <!-- Loading State for WebSocket -->
             <div v-else class="websocket-status">
               <div class="websocket-indicator websocket-connecting"></div>
-              <span class="websocket-text">Initializing...</span>
+              <span class="websocket-text">{{ t('status.initializing') }}</span>
             </div>
           </div>
 
@@ -460,7 +490,7 @@ const handleForceUIUpdate = () => {
                   :loading="startTicker?.loader?.value"
                 class="action-btn start-btn"
               >
-                Start System
+                {{ t('actions.startSystem') }}
               </v-btn>
 
               <template v-if="tickerHostStatus && isServicesReady">
@@ -481,7 +511,7 @@ const handleForceUIUpdate = () => {
                     >
                       mdi-restart
                     </v-icon>
-                    <span class="btn-text">Restart</span>
+                    <span class="btn-text">{{ t('actions.restart') }}</span>
                   </span>
 
                   <!-- Ripple Effect -->
@@ -495,18 +525,18 @@ const handleForceUIUpdate = () => {
                   variant="elevated"
                   size="small"
                   prepend-icon="mdi-stop-circle"
-                  @click="confirmDialog?.open({...new ConfirmDialogProps(), confirmText: 'Stop' })"
+                  @click="confirmDialog?.open({ ...new ConfirmDialogProps(), confirmText: t('actions.stop') })"
                   :loading="stopTicker?.loader?.value"
                   class="action-btn stop-btn"
                 >
-                  Stop System
+                  {{ t('actions.stopSystem') }}
                 </v-btn>
             </template>
 
             <!-- Loading State for Actions -->
             <div v-if="!isServicesReady" class="action-loading">
               <v-progress-circular indeterminate size="20" color="primary"></v-progress-circular>
-              <span class="loading-text">Loading...</span>
+              <span class="loading-text">{{ t('actions.loading') }}</span>
             </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
+import { i18n } from './i18n'
 
 // Import Vuetify
 import 'vuetify/styles'
@@ -54,6 +55,7 @@ app.use(pinia)
 app.use(router)
 app.use(vuetify)
 app.use(VueTheMask as any)
+app.use(i18n)
 
 // Mount the app
 app.mount('#app')
@@ -63,4 +65,3 @@ import { useConnectionStore } from './stores/connectionStore'
 // Expose connection store methods globally for debugging
 const connectionStore = useConnectionStore()
 ;(window as any).connectionStore = connectionStore
-

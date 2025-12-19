@@ -4,9 +4,12 @@
       <div class="login-header">
         <div class="logo-section">
           <img src="@/assets/arcenox-logo.svg" alt="TickerQ" class="logo" />
-          <h1 class="app-title">TickerQ Dashboard</h1>
+          <h1 class="app-title">{{ t('login.appTitle') }}</h1>
         </div>
-        <p class="login-subtitle">Please authenticate to access the dashboard</p>
+        <p class="login-subtitle">{{ t('login.subtitle') }}</p>
+        <div class="language-switcher">
+          <LanguageSwitcher />
+        </div>
       </div>
 
       <!-- Error Alert -->
@@ -30,8 +33,8 @@
       >
         <v-text-field
           v-model="authStore.credentials.username"
-          label="Username"
-          placeholder="Enter your username"
+          :label="t('login.usernameLabel')"
+          :placeholder="t('login.usernamePlaceholder')"
           prepend-inner-icon="mdi-account-circle"
           :rules="rules.username"
           variant="outlined"
@@ -44,8 +47,8 @@
         <v-text-field
           v-model="authStore.credentials.password"
           :type="showPassword ? 'text' : 'password'"
-          label="Password"
-          placeholder="Enter your password"
+          :label="t('login.passwordLabel')"
+          :placeholder="t('login.passwordPlaceholder')"
           prepend-inner-icon="mdi-lock"
           :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :rules="rules.password"
@@ -68,12 +71,12 @@
           elevation="0"
         >
           <v-icon start>mdi-login-variant</v-icon>
-          {{ authStore.isLoading ? 'Signing In...' : 'Sign In' }}
+          {{ authStore.isLoading ? t('login.signingIn') : t('login.signIn') }}
         </v-btn>
 
         <div class="auth-help-text">
           <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-          Enter your dashboard credentials to access TickerQ
+          {{ t('login.helpBasic') }}
         </div>
       </v-form>
 
@@ -86,8 +89,8 @@
       >
         <v-text-field
           v-model="authStore.credentials.apiKey"
-          label="API Key"
-          placeholder="Enter your API key or access token"
+          :label="t('login.apiKeyLabel')"
+          :placeholder="t('login.apiKeyPlaceholder')"
           prepend-inner-icon="mdi-key-variant"
           :rules="rules.apiKey"
           variant="outlined"
@@ -109,12 +112,12 @@
           elevation="0"
         >
           <v-icon start>mdi-shield-key</v-icon>
-          {{ authStore.isLoading ? 'Authenticating...' : 'Authenticate' }}
+          {{ authStore.isLoading ? t('login.authenticating') : t('login.authenticate') }}
         </v-btn>
 
         <div class="auth-help-text">
           <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-          Enter your API key or access token to access the dashboard
+          {{ t('login.helpApiKey') }}
         </div>
       </v-form>
 
@@ -122,8 +125,8 @@
       <div v-else-if="authMode === 'host'" class="host-auth-section">
         <div class="host-auth-message">
           <v-icon size="48" color="info" class="mb-3">mdi-shield-account</v-icon>
-          <h3>Host Authentication</h3>
-          <p>This dashboard uses your application's existing authentication system.</p>
+          <h3>{{ t('login.hostAuthenticationTitle') }}</h3>
+          <p>{{ t('login.hostAuthenticationDescription') }}</p>
         </div>
 
         <v-form
@@ -133,8 +136,8 @@
         >
           <v-text-field
             v-model="authStore.credentials.hostAccessKey"
-            label="Access Key"
-            placeholder="Bearer xyz123 or ApiKey abc456"
+            :label="t('login.accessKeyLabel')"
+            :placeholder="t('login.accessKeyPlaceholder')"
             prepend-inner-icon="mdi-key-variant"
             :rules="rules.hostAccessKey"
             variant="outlined"
@@ -155,12 +158,12 @@
             class="login-btn"
           >
             <v-icon start>mdi-shield-key</v-icon>
-            {{ authStore.isLoading ? 'Setting Access Key...' : 'Set Access Key' }}
+            {{ authStore.isLoading ? t('login.settingAccessKey') : t('login.setAccessKey') }}
           </v-btn>
 
           <div class="auth-help-text">
             <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-            Enter your full access key (including Bearer/ApiKey prefix) for API calls
+            {{ t('login.helpHost') }}
           </div>
         </v-form>
       </div>
@@ -168,10 +171,10 @@
       <!-- No Auth Message -->
       <div v-else class="no-auth-message">
         <v-icon size="48" color="success" class="mb-3">mdi-check-circle</v-icon>
-        <h3>Public Dashboard</h3>
-        <p>No authentication required.</p>
+        <h3>{{ t('login.publicTitle') }}</h3>
+        <p>{{ t('login.publicDescription') }}</p>
         <v-btn color="primary" @click="$router.push('/')">
-          Continue to Dashboard
+          {{ t('login.continue') }}
         </v-btn>
       </div>
     </div>
@@ -180,12 +183,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { getAuthMode } from '@/utilities/pathResolver'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 // Form state
 const form = ref()
@@ -195,24 +201,24 @@ const showPassword = ref(false)
 const authMode = computed(() => getAuthMode())
 
 // Validation rules
-const rules = {
+const rules = computed(() => ({
   username: [
-    (v: string) => !!v || 'Username is required',
-    (v: string) => v.length >= 3 || 'Username must be at least 3 characters'
+    (v: string) => !!v || t('validation.usernameRequired'),
+    (v: string) => v.length >= 3 || t('validation.usernameLength')
   ],
   password: [
-    (v: string) => !!v || 'Password is required',
-    (v: string) => v.length >= 1 || 'Password is required'
+    (v: string) => !!v || t('validation.passwordRequired'),
+    (v: string) => v.length >= 1 || t('validation.passwordRequired')
   ],
   apiKey: [
-    (v: string) => !!v || 'API key is required',
-    (v: string) => v.length >= 10 || 'API key must be at least 10 characters'
+    (v: string) => !!v || t('validation.apiKeyRequired'),
+    (v: string) => v.length >= 10 || t('validation.apiKeyLength')
   ],
   hostAccessKey: [
-    (v: string) => !!v || 'Access key is required',
-    (v: string) => v.length >= 10 || 'Access key must be at least 10 characters'
+    (v: string) => !!v || t('validation.accessKeyRequired'),
+    (v: string) => v.length >= 10 || t('validation.accessKeyLength')
   ]
-}
+}))
 
 // Form validation
 const isFormValid = computed(() => {
@@ -330,6 +336,12 @@ onMounted(() => {
   margin: 0;
   font-size: 16px;
   font-weight: 400;
+}
+
+.language-switcher {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
 }
 
 .login-form {
