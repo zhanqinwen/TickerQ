@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuth } from '../../composables/useAuth'
 import { useAuthStore } from '@/stores/authStore'
 import { authService } from '@/services/auth'
@@ -34,6 +35,7 @@ const {
   logout,
   clearError
 } = useAuth()
+const { t } = useI18n()
 
 // Import alert composable for demonstration
 import { useAlert } from '@/composables/useAlert'
@@ -101,7 +103,7 @@ const handleLogin = async () => {
     
     if (success) {
       isLoginFormVisible.value = false
-      showSuccess('Login successful!')
+      showSuccess(t('auth.loginSuccess'))
       emit('login', true)
       
       // Clear local form fields
@@ -110,11 +112,11 @@ const handleLogin = async () => {
       localApiKey.value = ''
     } else {
       // Error message is handled by auth store
-      showError(authStore.errorMessage || 'Login failed')
+      showError(authStore.errorMessage || t('auth.loginFailed'))
     }
   } catch (error) {
     console.error('Login error:', error)
-    showError('Login failed. Please try again.')
+    showError(t('auth.loginFailedRetry'))
   }
 }
 
@@ -123,11 +125,11 @@ const handleLogout = async () => {
     // Use auth store logout for all modes
     authStore.logout()
     
-    showInfo('Logged out successfully')
+    showInfo(t('auth.logoutSuccess'))
     emit('logout')
   } catch (error) {
     console.error('Logout error:', error)
-    showError('Logout failed')
+    showError(t('auth.logoutFailed'))
     emit('logout')
   }
 }
@@ -166,7 +168,7 @@ watch(isAuthenticated, (newValue) => {
           class="login-btn"
         >
           <v-icon start>mdi-login</v-icon>
-          Login
+          {{ t('auth.login') }}
         </v-btn>
       </div>
       
@@ -178,10 +180,10 @@ watch(isAuthenticated, (newValue) => {
             density="compact"
             class="info-alert"
           >
-            <span v-if="authMode === 'basic'">Basic Authentication Required</span>
-            <span v-else-if="authMode === 'bearer'">API Key Authentication Required</span>
-            <span v-else-if="authMode === 'host'">Host Authentication Required</span>
-            <span v-else>Authentication Required</span>
+            <span v-if="authMode === 'basic'">{{ t('auth.basicRequired') }}</span>
+            <span v-else-if="authMode === 'bearer'">{{ t('auth.apiKeyRequired') }}</span>
+            <span v-else-if="authMode === 'host'">{{ t('auth.hostRequired') }}</span>
+            <span v-else>{{ t('auth.authRequired') }}</span>
           </v-alert>
         </div>
         
@@ -190,7 +192,7 @@ watch(isAuthenticated, (newValue) => {
           <template v-if="authMode === 'basic'">
             <v-text-field
               v-model="localUsername"
-              label="Username"
+              :label="t('login.usernameLabel')"
               variant="outlined"
               density="compact"
               size="small"
@@ -200,7 +202,7 @@ watch(isAuthenticated, (newValue) => {
             />
             <v-text-field
               v-model="localPassword"
-              label="Password"
+              :label="t('login.passwordLabel')"
               type="password"
               variant="outlined"
               density="compact"
@@ -215,7 +217,7 @@ watch(isAuthenticated, (newValue) => {
           <template v-else-if="authMode === 'bearer'">
             <v-text-field
               v-model="localApiKey"
-              label="API Key"
+              :label="t('login.apiKeyLabel')"
               type="password"
               variant="outlined"
               density="compact"
@@ -223,7 +225,7 @@ watch(isAuthenticated, (newValue) => {
               class="api-key-field"
               :disabled="isLoading"
               @keyup.enter="handleLogin"
-              placeholder="Enter your API key"
+              :placeholder="t('auth.enterApiKey')"
             />
           </template>
           <v-btn
@@ -236,7 +238,7 @@ watch(isAuthenticated, (newValue) => {
             class="submit-btn"
           >
             <v-icon start>mdi-login</v-icon>
-            Login
+            {{ t('auth.login') }}
           </v-btn>
           <v-btn
             v-if="!requiresAuth"
@@ -246,7 +248,7 @@ watch(isAuthenticated, (newValue) => {
             :disabled="isLoading"
             class="cancel-btn"
           >
-            Cancel
+            {{ t('auth.cancel') }}
           </v-btn>
         </div>
         
@@ -280,7 +282,7 @@ watch(isAuthenticated, (newValue) => {
           class="logout-btn"
         >
           <v-icon start>mdi-logout</v-icon>
-          Logout
+          {{ t('auth.logout') }}
         </v-btn>
       </div>
     </div>

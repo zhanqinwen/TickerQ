@@ -1,0 +1,85 @@
+{
+  "language": {
+    "label": "语言",
+    "switcher": "切换语言"
+  },
+  "nav": {
+    "dashboard": "仪表盘",
+    "timeTickers": "时间触发器",
+    "cronTickers": "Cron 触发器"
+  },
+  "timezone": {
+    "display": "显示时区",
+    "reset": "重置为服务器时区",
+    "scheduler": "调度器（{zone}）"
+  },
+  "status": {
+    "online": "在线",
+    "offline": "离线",
+    "loading": "加载中...",
+    "unknown": "未知",
+    "error": "错误",
+    "websocketConnecting": "WebSocket 连接中...",
+    "websocketConnected": "WebSocket 已连接",
+    "websocketDisconnected": "WebSocket 已断开",
+    "initializing": "初始化中..."
+  },
+  "actions": {
+    "reconnect": "重新连接",
+    "startSystem": "启动系统",
+    "stop": "停止",
+    "stopSystem": "停止系统",
+    "restart": "重启",
+    "loading": "加载中..."
+  },
+  "login": {
+    "appTitle": "TickerQ 控制台",
+    "subtitle": "请先认证以访问仪表盘",
+    "usernameLabel": "用户名",
+    "usernamePlaceholder": "请输入用户名",
+    "passwordLabel": "密码",
+    "passwordPlaceholder": "请输入密码",
+    "apiKeyLabel": "API Key",
+    "apiKeyPlaceholder": "请输入 API key 或访问令牌",
+    "accessKeyLabel": "访问密钥",
+    "accessKeyPlaceholder": "Bearer xyz123 或 ApiKey abc456",
+    "signIn": "登录",
+    "signingIn": "正在登录...",
+    "authenticate": "认证",
+    "authenticating": "正在认证...",
+    "setAccessKey": "设置访问密钥",
+    "settingAccessKey": "正在设置访问密钥...",
+    "helpBasic": "请输入仪表盘账号密码以访问 TickerQ",
+    "helpApiKey": "请输入 API key 或访问令牌以访问仪表盘",
+    "helpHost": "请输入完整访问密钥（包含 Bearer/ApiKey 前缀）用于 API 调用",
+    "hostAuthenticationTitle": "主机认证",
+    "hostAuthenticationDescription": "此仪表盘使用您应用程序现有的认证系统。",
+    "publicTitle": "公开仪表盘",
+    "publicDescription": "无需认证。",
+    "continue": "继续进入仪表盘"
+  },
+  "validation": {
+    "usernameRequired": "用户名为必填项",
+    "usernameLength": "用户名至少为 3 个字符",
+    "passwordRequired": "密码为必填项",
+    "apiKeyRequired": "API key 为必填项",
+    "apiKeyLength": "API key 至少为 10 个字符",
+    "accessKeyRequired": "访问密钥为必填项",
+    "accessKeyLength": "访问密钥至少为 10 个字符"
+  },
+  "auth": {
+    "login": "登录",
+    "logout": "退出登录",
+    "cancel": "取消",
+    "basicRequired": "需要基础认证",
+    "apiKeyRequired": "需要 API Key 认证",
+    "hostRequired": "需要主机认证",
+    "authRequired": "需要认证",
+    "loginSuccess": "登录成功！",
+    "loginFailed": "登录失败",
+    "loginFailedRetry": "登录失败，请重试。",
+    "logoutSuccess": "已退出登录",
+    "logoutFailed": "退出失败",
+    "enterApiKey": "请输入 API key"
+  }
+}
